@@ -4,7 +4,7 @@ library(quantmod)
 
 # Define UI
 ui <- fluidPage(theme = shinytheme('sandstone'), 
-  titlePanel('Stock price monitor'),
+  titlePanel('Trading monitor'),
   
   sidebarLayout(
     # Define inputs
@@ -20,6 +20,9 @@ ui <- fluidPage(theme = shinytheme('sandstone'),
       selectInput(inputId = 'plottype', label = 'Plot type', 
                   choices = c('line', 'candlesticks', 'matchsticks', 'bars'), 
                   selected = 'candlesticks'),
+      selectInput(inputId = 'plottheme', label = 'Plot theme', 
+                  choices = c('white', 'black'), 
+                  selected = 'white'),
       checkboxGroupInput(inputId = 'indicators', label = 'Add indicators', 
                          choices = c('Simple Moving Average (SMA)',
                                      'Exponential Moving Average (EMA)', 
@@ -66,59 +69,59 @@ server <- function(input, output)
     date_from <- input$dates[1]
     date_to <- input$dates[2]
     plot_type <- input$plottype
-    chartSeries(stock_dataframe, name = paste0(stock_symbol), subset=paste0(date_from, '::', date_to), 
-                theme = 'white', type = plot_type)
-  
-    # Add inticators
-    #Welles Wilder's Directional Movement Indicator
-    addADX()
-    #Average True Range
-    addATR()
-    #Bollinger Bands
-    addBBands()
-    #Commodity Channel Index
-    addCCI()
-    #Chaiken Money Flow
-    addCMF()
-    #Chande Momentum Oscillator
-    addCMO()
-    #Double Exponential Moving Average
-    addDEMA()
-    #Detrended Price Oscillator
-    addDPO()
-    #Exponential Moving Average
-    addEMA()
-    #Price Envelope
-    addEnvelope()
-    #Exponential Volume Weigthed Moving Average
-    addEVWMA()
-    #Options and Futures Expiration
-    addExpiry()
-    #Moving Average Convergence Divergence
-    addMACD()
-    #Momentum
-    addMomentum()
-    #Rate of Change
-    addROC()
-    #Relative Strength Indicator
-    addRSI()
-    #Parabolic Stop and Reverse
-    addSAR()
+    plot_theme <- input$plottheme
+    indicator_list <- 'addVo()'
+    
+    # Add indicators
     #Simple Moving Average
-    addSMA()
-    #Stocastic Momentum Index
-    addSMI()
-    #Triple Smoothed Exponential Oscillator
-    addTRIX()
+    if ('Simple Moving Average (SMA)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addSMA()')} 
+    #Exponential Moving Average
+    if ('Exponential Moving Average (EMA)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addEMA()')}  
+    #Double Exponential Moving Average
+    if ('Double Exponential Moving Average (DEMA)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addDEMA()')} 
     #Weighted Moving Average
-    addWMA()
+    if ('Weighted Moving Average (WMA)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addWMA()')}
+    #Exponential Volume Weigthed Moving Average
+    if ('Exponential Volume Weigthed Moving Average (EVWMA)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addEVWMA()')}
+    #Moving Average Convergence Divergence
+    if ('Moving Average Convergence Divergence (MACD)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addMACD()')}
+    #Welles Wilder's Directional Movement Indicator
+    if ('Welles Wilder\'s Directional Movement Indicator (ADX)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addADX()')}
+    #Average True Range
+    if ('Average True Range (ATR)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addATR()')}
+    #Bollinger Bands
+    if ('Bollinger Bands' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addBBands()')}
+    #Commodity Channel Index
+    if ('Commodity Channel Index (CCI)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addCCI()')}
+    #Chaiken Money Flow
+    if ('Chaiken Money Flow (CMF)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addCMF()')}
+    #Chande Momentum Oscillator
+    if ('Chande Momentum Oscillator (CMO)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addCMO()')}
+    #Detrended Price Oscillator
+    if ('Detrended Price Oscillator (DPO)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addDPO()')}
+    #Price Envelope
+    if ('Price Envelope' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addEnvelope()')}
+    #Options and Futures Expiration
+    if ('Options and Futures Expiration' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addExpiry()')}
+    #Momentum
+    if ('Momentum' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addMomentum()')}
+    #Rate of Change
+    if ('Rate of Change (ROC)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addROC()')}
+    #Relative Strength Indicator
+    if ('Relative Strength Indicator (RSI)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addRSI()')}
+    #Parabolic Stop and Reverse
+    if ('Parabolic Stop and Reverse (SAR)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addSAR()')}
+    #Stocastic Momentum Index
+    if ('Stocastic Momentum Index (SMI)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addSMI()')}
+    #Triple Smoothed Exponential Oscillator
+    if ('Triple Smoothed Exponential Oscillator (TRIX)' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addTRIX()')}
     #Williams %R
-    addWPR()
+    if ('Williams %R' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addWPR()')}
     #ZLEMA
-    addZLEMA()
-    
-  })
-    
+    if ('ZLEMA' %in% input$indicators) {indicator_list <- paste0(indicator_list, ';addZLEMA()')}
+
+    chartSeries(stock_dataframe, name = paste0(stock_symbol), subset=paste0(date_from, '::', date_to),
+                  theme = plot_theme, type = plot_type, TA = indicator_list)})
 }
 
 shinyApp(ui=ui, server = server)
