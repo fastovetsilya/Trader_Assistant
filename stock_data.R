@@ -38,7 +38,7 @@ addEMA()
 addEnvelope()
 #Exponential Volume Weigthed Moving Average
 addEVWMA()
-# Options and Futures Expiration
+#Options and Futures Expiration
 addExpiry()
 #Moving Average Convergence Divergence
 addMACD()
@@ -56,8 +56,6 @@ addSMA()
 addSMI()
 #Triple Smoothed Exponential Oscillator
 addTRIX()
-#Volume
-addVo()
 #Weighted Moving Average
 addWMA()
 #Williams %R
